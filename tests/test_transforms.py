@@ -1,6 +1,6 @@
 import numpy
 
-from svg import path, transform
+from svg import transform
 
 
 def test_make_matrix():
@@ -101,7 +101,6 @@ def test_make_matrix():
 
 
 def test_coordinate_transform():
-
     def xy_transform(matrix, x, y):
         """Takes an x and a y coordinate and transforms it"""
         x, y, _ = matrix @ numpy.array([x, y, 1])
@@ -116,7 +115,7 @@ def test_coordinate_transform():
     assert xy_transform(matrix, 100, 100) == (200, 300)
 
     # Skew in 45 degree angles, one reversed
-    matrix = transform.make_matrix(ax=numpy.pi/4, ay=-numpy.pi/4)
+    matrix = transform.make_matrix(ax=numpy.pi / 4, ay=-numpy.pi / 4)
     x, y = xy_transform(matrix, 100, 100)
     # So the x is now 200
     assert x == 200
@@ -131,8 +130,36 @@ def test_coordinate_transform():
     numpy.testing.assert_almost_equal(y, -100)
 
     # Rotate 90 degrees with non-zero center
-    matrix = transform.make_matrix(r=numpy.pi/2, cx=50, cy=30)
+    matrix = transform.make_matrix(r=numpy.pi / 2, cx=50, cy=30)
     x, y = xy_transform(matrix, 100, 100)
     # They are approximately -100, -100 but not the last few decimals
     numpy.testing.assert_almost_equal(x, -20)
     numpy.testing.assert_almost_equal(y, 80)
+
+
+def test_parsing():
+    m = transform.parse("translate(-10,-20)")
+    assert m.tolist() == [[1, 0, -10], [0, 1, -20], [0, 0, 1]]
+
+    m = transform.parse("scale(2)")
+    assert m.tolist() == [[2, 0, 0], [0, 2, 0], [0, 0, 1]]
+
+    m = transform.parse("rotate(45)")
+    assert m.tolist() == [
+        [0.5253219888177297, -0.8509035245341184, 0],
+        [0.8509035245341184, 0.5253219888177297, 0],
+        [0, 0, 1],
+    ]
+
+    m = transform.parse("skewX(5)")
+    assert m.tolist() == [[1, -3.380515006246586, 0], [0, 1, 0], [0, 0, 1]]
+
+    m = transform.parse("skewY(5)")
+    assert m.tolist() == [[1, 0, 0], [-3.380515006246586, 1, 0], [0, 0, 1]]
+
+    m = transform.parse("translate(-10 -20) scale(2) rotate(45)translate(5,10)")
+    assert m.tolist() == [
+        [1.0506439776354595, -1.7018070490682369, -21.76485060250507],
+        [1.7018070490682369, 1.0506439776354595, -0.984524978304222],
+        [0, 0, 1],
+    ]
