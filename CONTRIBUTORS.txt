@@ -1,0 +1,4 @@
+Contributors
+============
+
+Lennart Regebro <regebro@gmail.com>, Original Author

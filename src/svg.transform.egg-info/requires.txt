@@ -1,0 +1,10 @@
+
+[test]
+Pillow
+black
+check-manifest
+flake8
+pyroma
+pytest
+pytest-cov
+zest.releaser[recommended]

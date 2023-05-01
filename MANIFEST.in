@@ -1,0 +1,6 @@
+include *.rst
+include *.txt
+
+exclude Makefile
+recursive-exclude tests *
+
